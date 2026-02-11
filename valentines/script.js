@@ -13,6 +13,7 @@
         'puzzle-section',
         'story-section',
         'qualities-section',
+        'dictionary-section',
         'gallery-section',
         'letter-section',
         'counter-section',
@@ -312,6 +313,9 @@
             case 'qualities-section':
                 animateQualities();
                 break;
+            case 'dictionary-section':
+                animateDictionary();
+                break;
             case 'letter-section':
                 animateLetter();
                 break;
@@ -349,6 +353,40 @@
             setTimeout(() => {
                 p.classList.add('visible');
             }, 300 + i * 400);
+        });
+    }
+
+    function animateDictionary() {
+        const categories = document.querySelectorAll('.dict-category');
+        categories.forEach((cat, i) => {
+            setTimeout(() => {
+                cat.classList.add('visible');
+                // Animate cards within each category
+                const cards = cat.querySelectorAll('.dict-card');
+                cards.forEach((card, j) => {
+                    const delay = parseInt(card.dataset.delay || 0);
+                    setTimeout(() => {
+                        card.classList.add('animate-in');
+                    }, delay + 100);
+                });
+            }, 200 + i * 300);
+        });
+
+        // Show footer
+        const footer = document.querySelector('.dict-footer');
+        if (footer) {
+            setTimeout(() => footer.classList.add('visible'), 800 + categories.length * 300);
+        }
+
+        // Setup tap-to-flip for mobile
+        document.querySelectorAll('.dict-card').forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove flipped from all others
+                document.querySelectorAll('.dict-card.flipped').forEach(c => {
+                    if (c !== card) c.classList.remove('flipped');
+                });
+                card.classList.toggle('flipped');
+            });
         });
     }
 
@@ -494,11 +532,12 @@
         const btnMap = {
             'btn-to-story': 2,
             'btn-to-qualities': 3,
-            'btn-to-gallery': 4,
-            'btn-to-letter': 5,
-            'btn-to-counter': 6,
-            'btn-to-future': 7,
-            'btn-to-finale': 8
+            'btn-to-dictionary': 4,
+            'btn-to-gallery': 5,
+            'btn-to-letter': 6,
+            'btn-to-counter': 7,
+            'btn-to-future': 8,
+            'btn-to-finale': 9
         };
 
         Object.entries(btnMap).forEach(([id, sectionIndex]) => {

@@ -9,7 +9,6 @@ Görsel / Animasyon
 4. İnteraktif Harita — Birlikte gittiğiniz şehirleri (Kadıköy, Kayseri, Positano, Napoli, Malaga, Marsilya, Atina) gösteren animasyonlu bir dünya haritası, noktalar arasında kalp çizgisi
 5. Yıldız Gökyüzü — 29 Kasım 2024 gecesinin yıldız haritası (o tarihteki gerçek gökyüzü konstelasyonları)
 6. Paralaks Sahil Sahnesi — Deniz'in sevdiği deniz/sahil temasıyla katmanlı bir animasyon
-
 Duygusal
 7. "Her Gün İçin Bir Sebep" — 365+ küçük "seni sevme sebebi" kartları, her gün yeni biri açılsın
 8. "Mimi Sözlüğü" — İkinize özel kelimelerin (benek, rich, tik, mimi) komik bir sözlük sayfası, tanımları ve örnek cümleleriyle
