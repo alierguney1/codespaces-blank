@@ -627,6 +627,7 @@
 
     <!-- ==================== SECTION 6: COUNTER ==================== -->
     <section id="counter-section" class="section">
+        <canvas id="stars-canvas" class="stars-canvas"></canvas>
         <div class="section-inner">
             <h2 class="section-title script-font">Birlikte Geçen Zamanımız ⏳</h2>
             <p class="section-desc">29 Kasım 2024'ten bu yana...</p>
@@ -652,11 +653,145 @@
 
             <p class="counter-message script-font">...ve saymaya devam ⏱️</p>
 
-            <button class="btn-continue" id="btn-to-future">Gelecek Hayallerimiz →</button>
+            <button class="btn-continue" id="btn-to-map">Gezdiğimiz Şehirler →</button>
         </div>
     </section>
 
-    <!-- ==================== SECTION 7: FUTURE DREAMS ==================== -->
+    <!-- ==================== SECTION 7: INTERACTIVE MAP ==================== -->
+    <section id="map-section" class="section">
+        <div class="section-inner">
+            <h2 class="section-title script-font">Birlikte Gezdiğimiz Şehirler 🗺️</h2>
+            <p class="section-desc">Her noktada bir anı, her anıda bir parça bizden...</p>
+
+            <div class="map-container">
+                <svg id="travel-map" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Europe Simple Outline -->
+                    <path class="map-outline" d="M 100,150 Q 200,100 350,120 T 650,140 Q 750,120 850,150 L 900,200 Q 920,300 880,400 L 850,450 Q 700,480 550,470 T 300,450 L 200,420 Q 150,350 120,280 Z" fill="none" stroke="#d4a373" stroke-width="2" opacity="0.3"/>
+                    
+                    <!-- Animated connection lines (will be animated via CSS) -->
+                    <g id="map-connections">
+                        <path class="connection-line" d="M 250,380 L 350,350" stroke="#e91e63" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                        <path class="connection-line" d="M 350,350 L 480,420" stroke="#e91e63" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                        <path class="connection-line" d="M 480,420 L 490,430" stroke="#e91e63" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                        <path class="connection-line" d="M 490,430 L 330,480" stroke="#e91e63" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                        <path class="connection-line" d="M 330,480 L 400,380" stroke="#e91e63" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                        <path class="connection-line" d="M 400,380 L 550,400" stroke="#e91e63" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                    </g>
+
+                    <!-- City markers with heart pins -->
+                    <g class="city-marker" data-city="kadikoy" data-memory="İlk buluşmamız... Kadıköy'ün sahilinde yürürken senin elini tuttum ve dünya durdu.">
+                        <path class="heart-pin" d="M 250,370 C 245,365 240,365 235,370 C 230,375 230,380 235,385 L 250,400 L 265,385 C 270,380 270,375 265,370 C 260,365 255,365 250,370 Z" fill="#e91e63"/>
+                        <circle cx="250" cy="400" r="3" fill="#c2185b"/>
+                        <text x="250" y="415" text-anchor="middle" class="city-label">Kadıköy</text>
+                    </g>
+
+                    <g class="city-marker" data-city="kayseri" data-memory="Aileni tanıdım ve sen benim ailem oldun. Kayseri'nin soğuğunda kalbim seninle ısındı.">
+                        <path class="heart-pin" d="M 350,340 C 345,335 340,335 335,340 C 330,345 330,350 335,355 L 350,370 L 365,355 C 370,350 370,345 365,340 C 360,335 355,335 350,340 Z" fill="#e91e63"/>
+                        <circle cx="350" cy="370" r="3" fill="#c2185b"/>
+                        <text x="350" y="385" text-anchor="middle" class="city-label">Kayseri</text>
+                    </g>
+
+                    <g class="city-marker" data-city="positano" data-memory="İtalya'nın cennet köşesi Positano... Denizin mavisi gözlerinle yarışıyordu ve sen kazandın.">
+                        <path class="heart-pin" d="M 480,410 C 475,405 470,405 465,410 C 460,415 460,420 465,425 L 480,440 L 495,425 C 500,420 500,415 495,410 C 490,405 485,405 480,410 Z" fill="#e91e63"/>
+                        <circle cx="480" cy="440" r="3" fill="#c2185b"/>
+                        <text x="480" y="455" text-anchor="middle" class="city-label">Positano</text>
+                    </g>
+
+                    <g class="city-marker" data-city="napoli" data-memory="Napoli'nin sokaklarında pizza yedik, kahve içtik ve aşık olduk... Bir kez daha.">
+                        <path class="heart-pin" d="M 490,420 C 485,415 480,415 475,420 C 470,425 470,430 475,435 L 490,450 L 505,435 C 510,430 510,425 505,420 C 500,415 495,415 490,420 Z" fill="#e91e63"/>
+                        <circle cx="490" cy="450" r="3" fill="#c2185b"/>
+                        <text x="490" y="465" text-anchor="middle" class="city-label">Napoli</text>
+                    </g>
+
+                    <g class="city-marker" data-city="malaga" data-memory="İspanya'nın güneşi kadar sıcaktı gülüşün. Malaga'da dans ettik, güldük, yaşadık.">
+                        <path class="heart-pin" d="M 330,470 C 325,465 320,465 315,470 C 310,475 310,480 315,485 L 330,500 L 345,485 C 350,480 350,475 345,470 C 340,465 335,465 330,470 Z" fill="#e91e63"/>
+                        <circle cx="330" cy="500" r="3" fill="#c2185b"/>
+                        <text x="330" y="515" text-anchor="middle" class="city-label">Malaga</text>
+                    </g>
+
+                    <g class="city-marker" data-city="marsilya" data-memory="Fransa'nın limanı Marsilya... Orada anladım ki seninle her liman, her şehir evimiz olabilir.">
+                        <path class="heart-pin" d="M 400,370 C 395,365 390,365 385,370 C 380,375 380,380 385,385 L 400,400 L 415,385 C 420,380 420,375 415,370 C 410,365 405,365 400,370 Z" fill="#e91e63"/>
+                        <circle cx="400" cy="400" r="3" fill="#c2185b"/>
+                        <text x="400" y="415" text-anchor="middle" class="city-label">Marsilya</text>
+                    </g>
+
+                    <g class="city-marker" data-city="atina" data-memory="Antik Yunan'ın başkenti Atina... Tanrıların şehri, aşkımızın tanığı. Her harabe arasında seni buldum.">
+                        <path class="heart-pin" d="M 550,390 C 545,385 540,385 535,390 C 530,395 530,400 535,405 L 550,420 L 565,405 C 570,400 570,395 565,390 C 560,385 555,385 550,390 Z" fill="#e91e63"/>
+                        <circle cx="550" cy="420" r="3" fill="#c2185b"/>
+                        <text x="550" y="435" text-anchor="middle" class="city-label">Atina</text>
+                    </g>
+                </svg>
+
+                <!-- Tooltip -->
+                <div id="map-tooltip" class="map-tooltip"></div>
+            </div>
+
+            <button class="btn-continue" id="btn-to-beach">Sahil Anılarımız →</button>
+        </div>
+    </section>
+
+    <!-- ==================== SECTION 8: BEACH SCENE ==================== -->
+    <section id="beach-section" class="section">
+        <div class="beach-parallax">
+            <!-- Sky Layer -->
+            <div class="parallax-layer sky-layer">
+                <div class="sun"></div>
+                <div class="cloud cloud-1"></div>
+                <div class="cloud cloud-2"></div>
+                <div class="cloud cloud-3"></div>
+            </div>
+            
+            <!-- Sea Layers -->
+            <div class="parallax-layer sea-layer sea-back"></div>
+            <div class="parallax-layer sea-layer sea-mid"></div>
+            <div class="parallax-layer sea-layer sea-front"></div>
+            
+            <!-- Beach Layer -->
+            <div class="parallax-layer beach-layer">
+                <div class="palm-tree palm-left"></div>
+                <div class="palm-tree palm-right"></div>
+            </div>
+            
+            <!-- Content Overlay -->
+            <div class="beach-content">
+                <h2 class="section-title script-font">Deniz'le Deniz Kenarında 🌊</h2>
+                <p class="beach-message">Senin en sevdiğin yer... Dalgaların sesiyle benimle...</p>
+                <button class="btn-continue" id="btn-to-memory-game">Hafıza Oyunu →</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SECTION 9: MEMORY CARD GAME ==================== -->
+    <section id="memory-game-section" class="section">
+        <div class="section-inner">
+            <h2 class="section-title script-font">Hafıza Oyunu 💝</h2>
+            <p class="section-desc">Anılarımızı eşleştir...</p>
+            
+            <div class="game-stats">
+                <div class="stat">
+                    <span class="stat-label">Hamle:</span>
+                    <span class="stat-value" id="move-count">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Eşleşme:</span>
+                    <span class="stat-value" id="match-count">0/8</span>
+                </div>
+                <button class="btn-subtle" id="game-reset">Yeniden Başlat</button>
+            </div>
+
+            <div class="memory-game-grid" id="memory-game-grid">
+                <!-- Cards will be generated by JS -->
+            </div>
+
+            <div class="game-complete hidden" id="game-complete">
+                <h3 class="script-font">Tebrikler! 🎉</h3>
+                <p>Tüm anılarımızı buldun... Çünkü her anı seninle unutulmaz! 💕</p>
+                <button class="btn-continue" id="btn-to-future">Gelecek Hayallerimiz →</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SECTION 10: FUTURE DREAMS ==================== -->
     <section id="future-section" class="section">
         <div class="section-inner">
             <h2 class="section-title script-font">Gelecek Hayallerimiz 🌍</h2>
@@ -692,7 +827,7 @@
         </div>
     </section>
 
-    <!-- ==================== SECTION 8: FINALE ==================== -->
+    <!-- ==================== SECTION 11: FINALE ==================== -->
     <section id="finale-section" class="section">
         <div class="section-inner finale-inner">
             <div class="finale-content">

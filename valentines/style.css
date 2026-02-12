@@ -1528,3 +1528,517 @@ body {
         font-size: 1.4rem;
     }
 }
+
+/* ==================== STARRY SKY CANVAS ==================== */
+.stars-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+#counter-section {
+    background: linear-gradient(135deg, #1a0a1f 0%, #2d1b3d 50%, #4a1942 100%);
+}
+
+#counter-section .section-inner {
+    position: relative;
+    z-index: 2;
+}
+
+#counter-section .section-title,
+#counter-section .section-desc,
+#counter-section .counter-message {
+    color: #fce4ec;
+    text-shadow: 0 0 10px rgba(233, 30, 99, 0.3);
+}
+
+/* ==================== INTERACTIVE MAP ==================== */
+#map-section {
+    background: linear-gradient(135deg, #fdf6f0 0%, #f5e6d8 100%);
+}
+
+.map-container {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px var(--shadow);
+}
+
+#travel-map {
+    width: 100%;
+    height: auto;
+}
+
+.map-outline {
+    animation: mapDraw 2s ease-in-out forwards;
+}
+
+@keyframes mapDraw {
+    from {
+        stroke-dasharray: 2000;
+        stroke-dashoffset: 2000;
+    }
+    to {
+        stroke-dasharray: 2000;
+        stroke-dashoffset: 0;
+    }
+}
+
+.connection-line {
+    stroke-dasharray: 10;
+    animation: dash 20s linear infinite;
+    opacity: 0.6;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: -200;
+    }
+}
+
+.city-marker {
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.city-marker:hover .heart-pin {
+    fill: #f50057;
+    transform: scale(1.2);
+    transform-origin: center;
+    animation: heartBeat 0.6s ease infinite;
+}
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1.2); }
+    50% { transform: scale(1.35); }
+}
+
+.city-label {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 14px;
+    fill: var(--text);
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.map-tooltip {
+    position: absolute;
+    background: rgba(194, 24, 91, 0.95);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    max-width: 280px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.map-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.map-tooltip::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(194, 24, 91, 0.95);
+}
+
+/* ==================== BEACH PARALLAX SCENE ==================== */
+#beach-section {
+    overflow: hidden;
+}
+
+.beach-parallax {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.parallax-layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.1s ease-out;
+}
+
+.sky-layer {
+    background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
+    z-index: 1;
+}
+
+.sun {
+    position: absolute;
+    top: 15%;
+    right: 20%;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, #FFD700 0%, #FFA500 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0.6);
+    animation: sunGlow 4s ease-in-out infinite;
+}
+
+@keyframes sunGlow {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 60px rgba(255, 215, 0, 0.6); }
+    50% { transform: scale(1.05); box-shadow: 0 0 80px rgba(255, 215, 0, 0.8); }
+}
+
+.cloud {
+    position: absolute;
+    background: white;
+    border-radius: 100px;
+    opacity: 0.8;
+}
+
+.cloud::before,
+.cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 100px;
+}
+
+.cloud-1 {
+    width: 80px;
+    height: 30px;
+    top: 20%;
+    left: 10%;
+    animation: float 30s ease-in-out infinite;
+}
+
+.cloud-1::before {
+    width: 50px;
+    height: 40px;
+    top: -20px;
+    left: 10px;
+}
+
+.cloud-1::after {
+    width: 60px;
+    height: 35px;
+    top: -15px;
+    right: 10px;
+}
+
+.cloud-2 {
+    width: 100px;
+    height: 35px;
+    top: 30%;
+    right: 15%;
+    animation: float 35s ease-in-out infinite;
+}
+
+.cloud-2::before {
+    width: 60px;
+    height: 45px;
+    top: -22px;
+    left: 15px;
+}
+
+.cloud-2::after {
+    width: 70px;
+    height: 40px;
+    top: -18px;
+    right: 15px;
+}
+
+.cloud-3 {
+    width: 70px;
+    height: 28px;
+    top: 25%;
+    left: 50%;
+    animation: float 40s ease-in-out infinite;
+}
+
+.cloud-3::before {
+    width: 45px;
+    height: 38px;
+    top: -18px;
+    left: 8px;
+}
+
+.cloud-3::after {
+    width: 55px;
+    height: 33px;
+    top: -15px;
+    right: 8px;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    50% { transform: translateX(100px) translateY(-20px); }
+}
+
+.sea-layer {
+    bottom: 0;
+    height: 40%;
+}
+
+.sea-back {
+    background: linear-gradient(180deg, #4A90E2 0%, #2E5C8A 100%);
+    z-index: 2;
+    opacity: 0.6;
+}
+
+.sea-mid {
+    background: linear-gradient(180deg, #5FA3E8 0%, #3D7AB8 100%);
+    z-index: 3;
+    opacity: 0.7;
+}
+
+.sea-front {
+    background: linear-gradient(180deg, #7DB8EC 0%, #5090C9 100%);
+    z-index: 4;
+    height: 30%;
+}
+
+.beach-layer {
+    bottom: 0;
+    height: 25%;
+    background: linear-gradient(180deg, #F4E4C1 0%, #E8D4A8 100%);
+    z-index: 5;
+}
+
+.palm-tree {
+    position: absolute;
+    bottom: 0;
+}
+
+.palm-tree::before {
+    content: '🌴';
+    font-size: 120px;
+    position: absolute;
+    bottom: 0;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+}
+
+.palm-left {
+    left: 10%;
+}
+
+.palm-right {
+    right: 15%;
+}
+
+.beach-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 40px 60px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.beach-message {
+    font-size: 1.2rem;
+    color: var(--primary);
+    margin: 20px 0 30px;
+    font-style: italic;
+}
+
+/* ==================== MEMORY GAME ==================== */
+#memory-game-section {
+    background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+}
+
+.game-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+.stat-label {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.memory-game-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 700px;
+    margin: 40px auto;
+    perspective: 1000px;
+}
+
+.memory-card {
+    aspect-ratio: 1;
+    position: relative;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.memory-card.flipped {
+    transform: rotateY(180deg);
+}
+
+.memory-card.matched {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+.card-back {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    font-size: 3rem;
+}
+
+.card-front {
+    background: white;
+    transform: rotateY(180deg);
+    font-size: 4rem;
+    border: 3px solid var(--accent);
+}
+
+.game-complete {
+    margin-top: 40px;
+    padding: 40px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px var(--shadow);
+}
+
+.game-complete h3 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.game-complete p {
+    font-size: 1.2rem;
+    color: var(--text);
+    margin-bottom: 25px;
+}
+
+/* ==================== RESPONSIVE - NEW SECTIONS ==================== */
+@media (max-width: 768px) {
+    .map-container {
+        padding: 15px;
+    }
+    
+    .city-label {
+        font-size: 11px;
+    }
+    
+    .map-tooltip {
+        font-size: 12px;
+        padding: 12px 15px;
+        max-width: 200px;
+    }
+    
+    .beach-content {
+        padding: 30px 40px;
+    }
+    
+    .beach-message {
+        font-size: 1rem;
+    }
+    
+    .sun {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .memory-game-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        max-width: 500px;
+    }
+    
+    .card-back {
+        font-size: 2rem;
+    }
+    
+    .card-front {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .beach-content {
+        padding: 20px 30px;
+    }
+    
+    .palm-tree::before {
+        font-size: 80px;
+    }
+    
+    .memory-game-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        max-width: 350px;
+    }
+    
+    .card-back {
+        font-size: 1.5rem;
+    }
+    
+    .card-front {
+        font-size: 2rem;
+    }
+    
+    .game-stats {
+        gap: 15px;
+    }
+    
+    .stat {
+        padding: 10px 15px;
+    }
+}

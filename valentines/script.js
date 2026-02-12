@@ -17,6 +17,9 @@
         'gallery-section',
         'letter-section',
         'counter-section',
+        'map-section',
+        'beach-section',
+        'memory-game-section',
         'future-section',
         'finale-section'
     ];
@@ -28,6 +31,14 @@
     let puzzleSolved = false;
     let selectedLetters = [];
     let counterInterval = null;
+    let starsCanvas = null;
+    let stars = [];
+    let mouseX = 0;
+    let mouseY = 0;
+    let memoryCards = [];
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let moveCount = 0;
 
     // ==================== INIT ====================
     document.addEventListener('DOMContentLoaded', () => {
@@ -38,6 +49,9 @@
         setupButtons();
         setupIntersectionAnimations();
         startCounter();
+        setupMap();
+        setupBeachParallax();
+        setupMemoryGame();
     });
 
     // ==================== FLOATING HEARTS ====================
@@ -319,6 +333,18 @@
             case 'letter-section':
                 animateLetter();
                 break;
+            case 'counter-section':
+                initStarryBackground();
+                break;
+            case 'map-section':
+                animateMap();
+                break;
+            case 'beach-section':
+                animateBeach();
+                break;
+            case 'memory-game-section':
+                // Game is already set up
+                break;
             case 'future-section':
                 animateDreams();
                 break;
@@ -536,8 +562,11 @@
             'btn-to-gallery': 5,
             'btn-to-letter': 6,
             'btn-to-counter': 7,
-            'btn-to-future': 8,
-            'btn-to-finale': 9
+            'btn-to-map': 8,
+            'btn-to-beach': 9,
+            'btn-to-memory-game': 10,
+            'btn-to-future': 11,
+            'btn-to-finale': 12
         };
 
         Object.entries(btnMap).forEach(([id, sectionIndex]) => {
@@ -573,6 +602,10 @@
             finaleCanvas.width = window.innerWidth;
             finaleCanvas.height = window.innerHeight;
         }
+        if (starsCanvas) {
+            starsCanvas.width = window.innerWidth;
+            starsCanvas.height = window.innerHeight;
+        }
     });
 
     // ==================== TOUCH SWIPE SUPPORT ====================
@@ -601,5 +634,237 @@
             }
         }
     }, { passive: true });
+
+    // ==================== STARRY BACKGROUND ====================
+    function initStarryBackground() {
+        starsCanvas = document.getElementById('stars-canvas');
+        if (!starsCanvas || stars.length > 0) return;
+
+        const ctx = starsCanvas.getContext('2d');
+        starsCanvas.width = window.innerWidth;
+        starsCanvas.height = window.innerHeight;
+
+        // Create stars
+        for (let i = 0; i < 200; i++) {
+            stars.push({
+                x: Math.random() * starsCanvas.width,
+                y: Math.random() * starsCanvas.height,
+                radius: Math.random() * 2,
+                vx: 0,
+                vy: 0,
+                alpha: Math.random(),
+                alphaChange: (Math.random() * 0.02) + 0.005
+            });
+        }
+
+        // Mouse move listener for parallax
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) / 100;
+            mouseY = (e.clientY - window.innerHeight / 2) / 100;
+        });
+
+        animateStars(ctx);
+    }
+
+    function animateStars(ctx) {
+        if (!starsCanvas) return;
+
+        ctx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+
+        stars.forEach(star => {
+            // Parallax effect
+            const parallaxX = star.x + mouseX * star.radius * 2;
+            const parallaxY = star.y + mouseY * star.radius * 2;
+
+            // Twinkling effect
+            star.alpha += star.alphaChange;
+            if (star.alpha <= 0 || star.alpha >= 1) {
+                star.alphaChange = -star.alphaChange;
+            }
+
+            ctx.globalAlpha = star.alpha;
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(parallaxX, parallaxY, star.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Add some pink/purple stars
+            if (Math.random() > 0.95) {
+                ctx.fillStyle = '#f8bbd0';
+                ctx.beginPath();
+                ctx.arc(parallaxX + 1, parallaxY + 1, star.radius * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        });
+
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(() => animateStars(ctx));
+    }
+
+    // ==================== INTERACTIVE MAP ====================
+    function setupMap() {
+        const markers = document.querySelectorAll('.city-marker');
+        const tooltip = document.getElementById('map-tooltip');
+
+        markers.forEach(marker => {
+            marker.addEventListener('mouseenter', (e) => {
+                const memory = marker.dataset.memory;
+                const rect = marker.getBoundingClientRect();
+                const container = document.querySelector('.map-container').getBoundingClientRect();
+
+                tooltip.textContent = memory;
+                tooltip.classList.add('visible');
+                
+                // Position tooltip
+                const tooltipWidth = 280;
+                const leftPos = rect.left - container.left + (rect.width / 2) - (tooltipWidth / 2);
+                const topPos = rect.top - container.top - 80;
+                
+                tooltip.style.left = Math.max(10, Math.min(leftPos, container.width - tooltipWidth - 10)) + 'px';
+                tooltip.style.top = Math.max(10, topPos) + 'px';
+            });
+
+            marker.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('visible');
+            });
+
+            marker.addEventListener('click', (e) => {
+                const memory = marker.dataset.memory;
+                const city = marker.dataset.city;
+                alert(`❤️ ${city.toUpperCase()}\n\n${memory}`);
+            });
+        });
+    }
+
+    function animateMap() {
+        // Map already has CSS animations
+    }
+
+    // ==================== BEACH PARALLAX ====================
+    function setupBeachParallax() {
+        const beachSection = document.getElementById('beach-section');
+        if (!beachSection) return;
+
+        beachSection.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) / 50;
+            const moveY = (e.clientY - window.innerHeight / 2) / 50;
+
+            const skyLayer = beachSection.querySelector('.sky-layer');
+            const seaBack = beachSection.querySelector('.sea-back');
+            const seaMid = beachSection.querySelector('.sea-mid');
+            const seaFront = beachSection.querySelector('.sea-front');
+            const beachLayer = beachSection.querySelector('.beach-layer');
+
+            if (skyLayer) skyLayer.style.transform = `translate(${moveX * 0.5}px, ${moveY * 0.5}px)`;
+            if (seaBack) seaBack.style.transform = `translate(${moveX * 1}px, ${moveY * 0.8}px)`;
+            if (seaMid) seaMid.style.transform = `translate(${moveX * 1.5}px, ${moveY * 1}px)`;
+            if (seaFront) seaFront.style.transform = `translate(${moveX * 2}px, ${moveY * 1.2}px)`;
+            if (beachLayer) beachLayer.style.transform = `translate(${moveX * 2.5}px, ${moveY * 1.5}px)`;
+        });
+    }
+
+    function animateBeach() {
+        // Beach animations are CSS-based
+    }
+
+    // ==================== MEMORY GAME ====================
+    function setupMemoryGame() {
+        const grid = document.getElementById('memory-game-grid');
+        const resetBtn = document.getElementById('game-reset');
+        
+        // Card emojis (8 pairs = 16 cards)
+        const cardEmojis = ['💕', '💗', '💖', '💘', '💝', '🥰', '😍', '❤️'];
+        
+        resetBtn.addEventListener('click', initMemoryGame);
+        initMemoryGame();
+
+        function initMemoryGame() {
+            // Reset game state
+            matchedPairs = 0;
+            moveCount = 0;
+            flippedCards = [];
+            memoryCards = [];
+            
+            // Update UI
+            document.getElementById('move-count').textContent = '0';
+            document.getElementById('match-count').textContent = '0/8';
+            document.getElementById('game-complete').classList.add('hidden');
+            
+            // Create card pairs and shuffle
+            const cards = [...cardEmojis, ...cardEmojis]
+                .sort(() => Math.random() - 0.5)
+                .map((emoji, index) => ({ emoji, id: index }));
+            
+            // Clear grid
+            grid.innerHTML = '';
+            
+            // Create card elements
+            cards.forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'memory-card';
+                cardEl.dataset.emoji = card.emoji;
+                cardEl.dataset.id = card.id;
+                
+                cardEl.innerHTML = `
+                    <div class="card-face card-back">💌</div>
+                    <div class="card-face card-front">${card.emoji}</div>
+                `;
+                
+                cardEl.addEventListener('click', () => handleCardClick(cardEl));
+                grid.appendChild(cardEl);
+                memoryCards.push(cardEl);
+            });
+        }
+
+        function handleCardClick(card) {
+            // Prevent clicking same card twice or more than 2 cards
+            if (card.classList.contains('flipped') || 
+                card.classList.contains('matched') || 
+                flippedCards.length >= 2) {
+                return;
+            }
+            
+            // Flip card
+            card.classList.add('flipped');
+            flippedCards.push(card);
+            
+            // Check for match when 2 cards are flipped
+            if (flippedCards.length === 2) {
+                moveCount++;
+                document.getElementById('move-count').textContent = moveCount;
+                
+                setTimeout(checkMatch, 600);
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            const emoji1 = card1.dataset.emoji;
+            const emoji2 = card2.dataset.emoji;
+            
+            if (emoji1 === emoji2) {
+                // Match!
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedPairs++;
+                
+                document.getElementById('match-count').textContent = `${matchedPairs}/8`;
+                
+                // Check if game is complete
+                if (matchedPairs === 8) {
+                    setTimeout(() => {
+                        document.getElementById('game-complete').classList.remove('hidden');
+                        createCelebrationHearts();
+                    }, 500);
+                }
+            } else {
+                // No match - flip back
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+            }
+            
+            flippedCards = [];
+        }
+    }
 
 })();
