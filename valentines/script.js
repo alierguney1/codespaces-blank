@@ -653,7 +653,8 @@
                 vx: 0,
                 vy: 0,
                 alpha: Math.random(),
-                alphaChange: (Math.random() * 0.02) + 0.005
+                alphaChange: (Math.random() * 0.02) + 0.005,
+                isPink: Math.random() > 0.95
             });
         }
 
@@ -689,7 +690,7 @@
             ctx.fill();
 
             // Add some pink/purple stars
-            if (Math.random() > 0.95) {
+            if (star.isPink) {
                 ctx.fillStyle = '#f8bbd0';
                 ctx.beginPath();
                 ctx.arc(parallaxX + 1, parallaxY + 1, star.radius * 0.5, 0, Math.PI * 2);
@@ -728,10 +729,16 @@
                 tooltip.classList.remove('visible');
             });
 
+            // For mobile - show tooltip on click and keep it visible
             marker.addEventListener('click', (e) => {
                 const memory = marker.dataset.memory;
-                const city = marker.dataset.city;
-                alert(`❤️ ${city.toUpperCase()}\n\n${memory}`);
+                tooltip.textContent = memory;
+                tooltip.classList.add('visible');
+                
+                // Keep tooltip visible for 3 seconds on mobile
+                setTimeout(() => {
+                    tooltip.classList.remove('visible');
+                }, 3000);
             });
         });
     }
