@@ -14,11 +14,9 @@
         'story-section',
         'qualities-section',
         'dictionary-section',
+        'travel-section',
         'gallery-section',
-        'letter-section',
         'counter-section',
-        'map-section',
-        'beach-section',
         'memory-game-section',
         'future-section',
         'finale-section'
@@ -49,9 +47,9 @@
         setupButtons();
         setupIntersectionAnimations();
         startCounter();
-        setupMap();
-        setupBeachParallax();
         setupMemoryGame();
+        setupBoardingPasses();
+        setupGalleryLightbox();
     });
 
     // ==================== FLOATING HEARTS ====================
@@ -145,28 +143,35 @@
     }
 
     // ==================== MUSIC PLAYER ====================
+    let audio = null;
+    let isPlaying = false;
+
     function showMusicPlayer() {
         const player = document.getElementById('music-player');
         player.classList.remove('hidden');
         player.classList.add('visible');
 
         const toggle = document.getElementById('music-toggle');
-        let audio = null;
-        let isPlaying = false;
+
+        if (!audio) {
+            audio = new Audio();
+            audio.src = 'music.mp3';
+            audio.loop = true;
+            audio.volume = 0.5;
+            audio.onerror = () => {
+                console.log('Müzik dosyası bulunamadı. "music.mp3" dosyasını aynı klasöre ekleyin.');
+            };
+        }
+
+        // Zarf açılınca otomatik çal
+        audio.play().then(() => {
+            isPlaying = true;
+            player.classList.add('playing');
+        }).catch(() => {
+            console.log('Müzik çalmak için kullanıcı etkileşimi gerekiyor.');
+        });
 
         toggle.addEventListener('click', () => {
-            if (!audio) {
-                // Use a royalty-free placeholder — user can replace with actual file
-                audio = new Audio();
-                // Try to load local file first, fallback notice
-                audio.src = 'music.mp3';
-                audio.loop = true;
-                audio.volume = 0.5;
-                audio.onerror = () => {
-                    console.log('Müzik dosyası bulunamadı. "music.mp3" dosyasını aynı klasöre ekleyin.');
-                };
-            }
-
             if (isPlaying) {
                 audio.pause();
                 player.classList.remove('playing');
@@ -330,17 +335,11 @@
             case 'dictionary-section':
                 animateDictionary();
                 break;
-            case 'letter-section':
-                animateLetter();
+            case 'travel-section':
+                animateBoardingPasses();
                 break;
             case 'counter-section':
                 initStarryBackground();
-                break;
-            case 'map-section':
-                animateMap();
-                break;
-            case 'beach-section':
-                animateBeach();
                 break;
             case 'memory-game-section':
                 // Game is already set up
@@ -414,6 +413,52 @@
                 card.classList.toggle('flipped');
             });
         });
+    }
+
+    // ==================== BOARDING PASSES ====================
+    function setupBoardingPasses() {
+        // Click to flip
+        document.querySelectorAll('.boarding-pass').forEach(bp => {
+            bp.addEventListener('click', (e) => {
+                // Don't flip if clicking a photo
+                if (e.target.tagName === 'IMG') return;
+                bp.classList.toggle('flipped');
+            });
+        });
+
+        // Lightbox for photos
+        const lightbox = document.createElement('div');
+        lightbox.className = 'bp-lightbox';
+        lightbox.innerHTML = '<img src="" alt="">';
+        document.body.appendChild(lightbox);
+
+        lightbox.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+
+        document.querySelectorAll('.bp-photos img').forEach(img => {
+            img.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const fullSrc = img.src.replace('/thumbs/', '/');
+                lightbox.querySelector('img').src = fullSrc;
+                lightbox.classList.add('active');
+            });
+        });
+    }
+
+    function animateBoardingPasses() {
+        const passes = document.querySelectorAll('.boarding-pass');
+        passes.forEach((bp, i) => {
+            setTimeout(() => {
+                bp.classList.add('visible');
+            }, 200 + i * 150);
+        });
+
+        // Show footer
+        const footer = document.querySelector('.travel-footer');
+        if (footer) {
+            setTimeout(() => footer.classList.add('visible'), 400 + passes.length * 150);
+        }
     }
 
     function animateDreams() {
@@ -559,14 +604,12 @@
             'btn-to-story': 2,
             'btn-to-qualities': 3,
             'btn-to-dictionary': 4,
-            'btn-to-gallery': 5,
-            'btn-to-letter': 6,
+            'btn-to-travel': 5,
+            'btn-to-gallery': 6,
             'btn-to-counter': 7,
-            'btn-to-map': 8,
-            'btn-to-beach': 9,
-            'btn-to-memory-game': 10,
-            'btn-to-future': 11,
-            'btn-to-finale': 12
+            'btn-to-memory-game': 8,
+            'btn-to-future': 9,
+            'btn-to-finale': 10
         };
 
         Object.entries(btnMap).forEach(([id, sectionIndex]) => {
@@ -702,52 +745,7 @@
         requestAnimationFrame(() => animateStars(ctx));
     }
 
-    // ==================== INTERACTIVE MAP ====================
-    function setupMap() {
-        const markers = document.querySelectorAll('.city-marker');
-        const tooltip = document.getElementById('map-tooltip');
-
-        markers.forEach(marker => {
-            marker.addEventListener('mouseenter', (e) => {
-                const memory = marker.dataset.memory;
-                const rect = marker.getBoundingClientRect();
-                const container = document.querySelector('.map-container').getBoundingClientRect();
-
-                tooltip.textContent = memory;
-                tooltip.classList.add('visible');
-                
-                // Position tooltip
-                const tooltipWidth = 280;
-                const leftPos = rect.left - container.left + (rect.width / 2) - (tooltipWidth / 2);
-                const topPos = rect.top - container.top - 80;
-                
-                tooltip.style.left = Math.max(10, Math.min(leftPos, container.width - tooltipWidth - 10)) + 'px';
-                tooltip.style.top = Math.max(10, topPos) + 'px';
-            });
-
-            marker.addEventListener('mouseleave', () => {
-                tooltip.classList.remove('visible');
-            });
-
-            // For mobile - show tooltip on click and keep it visible
-            marker.addEventListener('click', (e) => {
-                const memory = marker.dataset.memory;
-                tooltip.textContent = memory;
-                tooltip.classList.add('visible');
-                
-                // Keep tooltip visible for 3 seconds on mobile
-                setTimeout(() => {
-                    tooltip.classList.remove('visible');
-                }, 3000);
-            });
-        });
-    }
-
-    function animateMap() {
-        // Map already has CSS animations
-    }
-
-    // ==================== BEACH PARALLAX ====================
+    // ==================== BEACH PARALLAX ==
     function setupBeachParallax() {
         const beachSection = document.getElementById('beach-section');
         if (!beachSection) return;
@@ -779,8 +777,17 @@
         const grid = document.getElementById('memory-game-grid');
         const resetBtn = document.getElementById('game-reset');
         
-        // Card emojis (8 pairs = 16 cards)
-        const cardEmojis = ['💕', '💗', '💖', '💘', '💝', '🥰', '😍', '❤️'];
+        // City-photo pairs for matching (8 pairs = 16 cards)
+        const cityPhotoPairs = [
+            { city: 'Kayseri', emoji: '⛷️', photo: '../photos/thumbs/Kayseri/3680B452-DB9F-49D5-82FC-5F306ABAB5B6_1_105_c.jpeg' },
+            { city: 'Malaga', emoji: '🇪🇸', photo: '../photos/thumbs/Malaga/451ADC0C-F51B-43B5-AFCF-23B5D308A503_1_105_c.jpeg' },
+            { city: 'Positano', emoji: '🇮🇹', photo: '../photos/thumbs/Positano/4EDACF22-11BF-4399-AD2C-9ACECB68A7F0.JPG' },
+            { city: 'Atina', emoji: '🇬🇷', photo: '../photos/thumbs/Atina/6C636F48-322C-42AF-B601-5700C993C5C5_1_105_c.jpeg' },
+            { city: 'Marsilya', emoji: '🇫🇷', photo: '../photos/thumbs/Marsilya/9C400CD9-E6EE-4F55-A2C1-9BCE1F46D0FF_1_105_c.jpeg' },
+            { city: 'İzmir', emoji: '🏖️', photo: '../photos/thumbs/Izmir/EC8ACB1A-BBDE-46BE-8E57-B23B09A0C000_1_105_c.jpeg' },
+            { city: 'Antalya', emoji: '🌊', photo: '../photos/thumbs/Antalya/98AAFEC6-2BBA-4DE6-80F3-658178101024_1_105_c.jpeg' },
+            { city: 'Tiflis', emoji: '🇬🇪', photo: '../photos/thumbs/Tiflis/5B676161-457C-4625-A89F-A67D08A65175.JPG' }
+        ];
         
         resetBtn.addEventListener('click', initMemoryGame);
         initMemoryGame();
@@ -797,25 +804,56 @@
             document.getElementById('match-count').textContent = '0/8';
             document.getElementById('game-complete').classList.add('hidden');
             
-            // Create card pairs and shuffle
-            const cards = [...cardEmojis, ...cardEmojis]
-                .sort(() => Math.random() - 0.5)
-                .map((emoji, index) => ({ emoji, id: index }));
+            // Create cards: one city card + one photo card per pair
+            const cards = [];
+            cityPhotoPairs.forEach((pair, idx) => {
+                // City name card
+                cards.push({
+                    type: 'city',
+                    pairId: idx,
+                    city: pair.city,
+                    emoji: pair.emoji,
+                    photo: null
+                });
+                // Photo card
+                cards.push({
+                    type: 'photo',
+                    pairId: idx,
+                    city: pair.city,
+                    emoji: null,
+                    photo: pair.photo
+                });
+            });
+            
+            // Shuffle
+            cards.sort(() => Math.random() - 0.5);
             
             // Clear grid
             grid.innerHTML = '';
             
             // Create card elements
-            cards.forEach(card => {
+            cards.forEach((card, index) => {
                 const cardEl = document.createElement('div');
                 cardEl.className = 'memory-card';
-                cardEl.dataset.emoji = card.emoji;
-                cardEl.dataset.id = card.id;
+                cardEl.dataset.pairId = card.pairId;
+                cardEl.dataset.id = index;
                 
-                cardEl.innerHTML = `
-                    <div class="card-face card-back">💌</div>
-                    <div class="card-face card-front">${card.emoji}</div>
-                `;
+                if (card.type === 'city') {
+                    cardEl.innerHTML = `
+                        <div class="card-face card-back">💌</div>
+                        <div class="card-face card-front card-city">
+                            <span class="card-emoji">${card.emoji}</span>
+                            <span class="card-city-name">${card.city}</span>
+                        </div>
+                    `;
+                } else {
+                    cardEl.innerHTML = `
+                        <div class="card-face card-back">💌</div>
+                        <div class="card-face card-front card-photo">
+                            <img src="${card.photo}" alt="${card.city}" loading="lazy">
+                        </div>
+                    `;
+                }
                 
                 cardEl.addEventListener('click', () => handleCardClick(cardEl));
                 grid.appendChild(cardEl);
@@ -840,16 +878,16 @@
                 moveCount++;
                 document.getElementById('move-count').textContent = moveCount;
                 
-                setTimeout(checkMatch, 600);
+                setTimeout(checkMatch, 800);
             }
         }
 
         function checkMatch() {
             const [card1, card2] = flippedCards;
-            const emoji1 = card1.dataset.emoji;
-            const emoji2 = card2.dataset.emoji;
+            const pairId1 = card1.dataset.pairId;
+            const pairId2 = card2.dataset.pairId;
             
-            if (emoji1 === emoji2) {
+            if (pairId1 === pairId2) {
                 // Match!
                 card1.classList.add('matched');
                 card2.classList.add('matched');
@@ -872,6 +910,28 @@
             
             flippedCards = [];
         }
+    }
+
+    // ==================== GALLERY LIGHTBOX ====================
+    function setupGalleryLightbox() {
+        // Create lightbox element
+        const lightbox = document.createElement('div');
+        lightbox.className = 'gallery-lightbox';
+        lightbox.innerHTML = '<img src="" alt="">';
+        document.body.appendChild(lightbox);
+
+        lightbox.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+
+        // Attach click to all gallery photos
+        document.querySelectorAll('.gallery-container .photo-placeholder.has-photo img').forEach(img => {
+            img.addEventListener('click', (e) => {
+                e.stopPropagation();
+                lightbox.querySelector('img').src = img.src;
+                lightbox.classList.add('active');
+            });
+        });
     }
 
 })();
