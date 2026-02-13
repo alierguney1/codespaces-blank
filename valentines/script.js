@@ -654,60 +654,82 @@
     // ==================== TOUCH SWIPE SUPPORT ====================
     let touchStartY = 0;
     let touchStartX = 0;
-    let touchStartTime = 0;
     let touchStartScrollTop = 0;
+    let contentDidScroll = false;
+    let sectionChangeCooldown = false;
 
     document.addEventListener('touchstart', (e) => {
         touchStartY = e.touches[0].clientY;
         touchStartX = e.touches[0].clientX;
-        touchStartTime = Date.now();
+        contentDidScroll = false;
 
         // Remember scroll position of the active section at touch start
         const activeSection = document.querySelector('.section.active');
         touchStartScrollTop = activeSection ? activeSection.scrollTop : 0;
     }, { passive: true });
 
+    document.addEventListener('touchmove', (e) => {
+        // Check if section content actually scrolled during this touch
+        const activeSection = document.querySelector('.section.active');
+        if (activeSection) {
+            const scrollDiff = Math.abs(activeSection.scrollTop - touchStartScrollTop);
+            if (scrollDiff > 2) {
+                contentDidScroll = true;
+            }
+        }
+    }, { passive: true });
+
     document.addEventListener('touchend', (e) => {
+        // If there's a cooldown active, ignore
+        if (sectionChangeCooldown) return;
+
         const diffY = touchStartY - e.changedTouches[0].clientY;
         const diffX = touchStartX - e.changedTouches[0].clientX;
-        const elapsed = Date.now() - touchStartTime;
         const threshold = 80;
 
-        // Ignore very slow drags (user is casually scrolling content)
-        if (elapsed > 600) return;
+        // If mostly horizontal swipe, ignore
+        if (Math.abs(diffX) > Math.abs(diffY)) return;
+        // Not enough vertical distance
+        if (Math.abs(diffY) < threshold) return;
 
-        if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > threshold) {
-            const activeSection = document.querySelector('.section.active');
+        const activeSection = document.querySelector('.section.active');
 
-            if (activeSection) {
-                const scrollTop = activeSection.scrollTop;
-                const scrollHeight = activeSection.scrollHeight;
-                const clientHeight = activeSection.clientHeight;
-                const isScrollable = scrollHeight > clientHeight + 10;
+        if (activeSection) {
+            const scrollTop = activeSection.scrollTop;
+            const scrollHeight = activeSection.scrollHeight;
+            const clientHeight = activeSection.clientHeight;
+            const isScrollable = scrollHeight > clientHeight + 10;
 
-                if (isScrollable) {
-                    // Swiping up (next section): only allow if scrolled to bottom
-                    if (diffY > 0) {
-                        const atBottom = scrollTop + clientHeight >= scrollHeight - 15;
-                        if (!atBottom) return; // still has content to scroll
-                    }
-                    // Swiping down (prev section): only allow if scrolled to top
-                    if (diffY < 0) {
-                        const atTop = scrollTop <= 5;
-                        if (!atTop) return; // still has content above
-                    }
+            if (isScrollable) {
+                // If content scrolled during this touch, it was a content scroll — NOT a section swipe
+                if (contentDidScroll) return;
+
+                // Extra safety: check if at scroll boundary
+                if (diffY > 0) {
+                    // Swiping up (next): only if truly at bottom
+                    const atBottom = scrollTop + clientHeight >= scrollHeight - 20;
+                    if (!atBottom) return;
+                }
+                if (diffY < 0) {
+                    // Swiping down (prev): only if truly at top
+                    const atTop = scrollTop <= 5;
+                    if (!atTop) return;
                 }
             }
+        }
 
-            if (diffY > 0) {
-                // Swipe up - next section
-                if (currentSection === 0) return;
-                if (currentSection === 1 && !puzzleSolved) return;
-                goToSection(currentSection + 1);
-            } else {
-                // Swipe down - previous section
-                goToSection(currentSection - 1);
-            }
+        // Apply cooldown to prevent double-triggers
+        sectionChangeCooldown = true;
+        setTimeout(() => { sectionChangeCooldown = false; }, 800);
+
+        if (diffY > 0) {
+            // Swipe up - next section
+            if (currentSection === 0) return;
+            if (currentSection === 1 && !puzzleSolved) return;
+            goToSection(currentSection + 1);
+        } else {
+            // Swipe down - previous section
+            goToSection(currentSection - 1);
         }
     }, { passive: true });
 
