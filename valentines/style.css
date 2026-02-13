@@ -275,11 +275,11 @@ body {
     }
 }
 
-/* Mobile: smaller photos */
+/* Mobile: slightly smaller photos */
 @media (max-width: 600px) {
     .mini-photo {
-        width: calc(var(--size, 65px) * 0.7);
-        height: calc(var(--size, 65px) * 0.7);
+        width: calc(var(--size, 65px) * 0.85);
+        height: calc(var(--size, 65px) * 0.85);
     }
 }
 

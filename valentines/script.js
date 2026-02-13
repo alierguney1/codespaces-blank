@@ -179,13 +179,13 @@
 
     function createScatteredPhotos() {
         // Intro: seyahat fotoğrafları, seyrek
-        scatterPhotos('scattered-photos', TRAVEL_THUMBS, 8, 50, 80);
+        scatterPhotos('scattered-photos', TRAVEL_THUMBS, 8, 75, 110);
         // Qualities (Sende Sevdiklerim): deniz fotoğrafları, yoğun
-        scatterPhotos('scattered-photos-qualities', DENIZ_PHOTOS, 20, 45, 75);
+        scatterPhotos('scattered-photos-qualities', DENIZ_PHOTOS, 20, 70, 100);
         // Finale: seyahat fotoğrafları, orta yoğunluk
-        scatterPhotos('scattered-photos-finale', TRAVEL_THUMBS, 10, 45, 70);
+        scatterPhotos('scattered-photos-finale', TRAVEL_THUMBS, 10, 65, 95);
         // Counter: seyahat fotoğrafları, seyrek
-        scatterPhotos('scattered-photos-counter', TRAVEL_THUMBS, 6, 40, 65);
+        scatterPhotos('scattered-photos-counter', TRAVEL_THUMBS, 6, 65, 90);
     }
 
     // ==================== ENVELOPE ====================
@@ -761,110 +761,8 @@
     });
 
     // ==================== TOUCH SWIPE SUPPORT ====================
-    let touchStartY = 0;
-    let touchStartX = 0;
-    let touchStartScrollTop = 0;
-    let startedAtBoundary = false; // Was the user already at the boundary when touch started?
-    let contentDidScroll = false;
-    let sectionChangeCooldown = false;
-
-    document.addEventListener('touchstart', (e) => {
-        touchStartY = e.touches[0].clientY;
-        touchStartX = e.touches[0].clientX;
-        contentDidScroll = false;
-        startedAtBoundary = false;
-
-        // Remember scroll position of the active section at touch start
-        const activeSection = document.querySelector('.section.active');
-        if (activeSection) {
-            touchStartScrollTop = activeSection.scrollTop;
-            const scrollHeight = activeSection.scrollHeight;
-            const clientHeight = activeSection.clientHeight;
-            const isScrollable = scrollHeight > clientHeight + 10;
-
-            if (!isScrollable) {
-                // Not scrollable — always at boundary
-                startedAtBoundary = true;
-            } else {
-                // Check if already at top or bottom when touch starts
-                const atTop = activeSection.scrollTop <= 3;
-                const atBottom = activeSection.scrollTop + clientHeight >= scrollHeight - 3;
-                startedAtBoundary = atTop || atBottom;
-            }
-        } else {
-            touchStartScrollTop = 0;
-            startedAtBoundary = true;
-        }
-    }, { passive: true });
-
-    document.addEventListener('touchmove', (e) => {
-        // Check if section content actually scrolled during this touch
-        const activeSection = document.querySelector('.section.active');
-        if (activeSection) {
-            const scrollDiff = Math.abs(activeSection.scrollTop - touchStartScrollTop);
-            if (scrollDiff > 5) {
-                contentDidScroll = true;
-            }
-        }
-    }, { passive: true });
-
-    document.addEventListener('touchend', (e) => {
-        // If there's a cooldown active, ignore
-        if (sectionChangeCooldown) return;
-
-        const diffY = touchStartY - e.changedTouches[0].clientY;
-        const diffX = touchStartX - e.changedTouches[0].clientX;
-        const threshold = 120; // Higher threshold to avoid accidental triggers
-
-        // If mostly horizontal swipe, ignore
-        if (Math.abs(diffX) > Math.abs(diffY)) return;
-        // Not enough vertical distance
-        if (Math.abs(diffY) < threshold) return;
-
-        const activeSection = document.querySelector('.section.active');
-
-        if (activeSection) {
-            const scrollTop = activeSection.scrollTop;
-            const scrollHeight = activeSection.scrollHeight;
-            const clientHeight = activeSection.clientHeight;
-            const isScrollable = scrollHeight > clientHeight + 10;
-
-            if (isScrollable) {
-                // If content scrolled during this touch, it was a content scroll — NOT a section swipe
-                if (contentDidScroll) return;
-
-                // The user must have STARTED at the boundary to trigger a section change.
-                // This prevents changing sections when a scroll gesture reaches the boundary mid-swipe.
-                if (!startedAtBoundary) return;
-
-                // Double-check: make sure we're at the correct boundary for the swipe direction
-                if (diffY > 0) {
-                    // Swiping up (next): only if truly at bottom
-                    const atBottom = scrollTop + clientHeight >= scrollHeight - 5;
-                    if (!atBottom) return;
-                }
-                if (diffY < 0) {
-                    // Swiping down (prev): only if truly at top
-                    const atTop = scrollTop <= 3;
-                    if (!atTop) return;
-                }
-            }
-        }
-
-        // Apply cooldown to prevent double-triggers
-        sectionChangeCooldown = true;
-        setTimeout(() => { sectionChangeCooldown = false; }, 1000);
-
-        if (diffY > 0) {
-            // Swipe up - next section
-            if (currentSection === 0) return;
-            if (currentSection === 1 && !puzzleSolved) return;
-            goToSection(currentSection + 1);
-        } else {
-            // Swipe down - previous section
-            goToSection(currentSection - 1);
-        }
-    }, { passive: true });
+    // Mobile: swipe ile sayfa geçişi devre dışı, sadece butonlarla geçilsin
+    // Desktop: mouse wheel ile geçiş hâlâ aktif (setupNavigation'da)
 
     // ==================== STARRY BACKGROUND ====================
     function initStarryBackground() {
