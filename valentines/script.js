@@ -81,55 +81,73 @@
     }
 
     // ==================== SCATTERED MINI PHOTOS ====================
-    function createScatteredPhotos() {
-        const container = document.getElementById('scattered-photos');
+    const TRAVEL_THUMBS = [
+        '../thumbs/Kayseri/3680B452-DB9F-49D5-82FC-5F306ABAB5B6_1_105_c.jpeg',
+        '../thumbs/Malaga/451ADC0C-F51B-43B5-AFCF-23B5D308A503_1_105_c.jpeg',
+        '../thumbs/Malaga/5BB4DF3E-9C66-4F90-9026-21AD93CFB002_1_105_c.jpeg',
+        '../thumbs/Positano/4EDACF22-11BF-4399-AD2C-9ACECB68A7F0.JPG',
+        '../thumbs/Positano/FB176F85-F1B5-4D01-ABD0-422FA8DBB204_1_105_c.jpeg',
+        '../thumbs/Atina/6C636F48-322C-42AF-B601-5700C993C5C5_1_105_c.jpeg',
+        '../thumbs/Atina/7AF728E7-0A8E-47F0-984D-480E46FBF485_1_105_c.jpeg',
+        '../thumbs/Marsilya/9C400CD9-E6EE-4F55-A2C1-9BCE1F46D0FF_1_105_c.jpeg',
+        '../thumbs/Napoli/39589054-8615-4D20-B75E-FD316AAE2080.JPG',
+        '../thumbs/Izmir/EC8ACB1A-BBDE-46BE-8E57-B23B09A0C000_1_105_c.jpeg',
+        '../thumbs/Antalya/98AAFEC6-2BBA-4DE6-80F3-658178101024_1_105_c.jpeg',
+        '../thumbs/Tiflis/5B676161-457C-4625-A89F-A67D08A65175.JPG',
+        '../thumbs/Tiflis/2BF6EDA1-29AB-4121-AE2F-304287712813.JPG',
+        '../thumbs/Antalya/002DC462-D371-4FC2-BA6D-E2B66F573C3F_1_105_c.jpeg',
+    ];
+
+    const DENIZ_PHOTOS = [
+        '../deniz_photos/25A10030-6490-4988-85FB-DCE316C6E1B3_1_105_c.jpeg',
+        '../deniz_photos/26818E10-CACC-4EDA-BAF9-A9BCF1CF298C_1_105_c.jpeg',
+        '../deniz_photos/395AB4E4-8A72-4C0B-81F5-AD174BD0C5EA_1_105_c.jpeg',
+        '../deniz_photos/43A80C78-47AE-49C4-9528-746790C60CFF_1_105_c.jpeg',
+        '../deniz_photos/469CC6E6-A6FE-4327-98B9-F408742C344A_1_105_c.jpeg',
+        '../deniz_photos/47F98484-2600-4F3F-982C-6C027C42F28F_1_105_c.jpeg',
+        '../deniz_photos/6653BC16-6F2D-4D94-AF0D-9EBFDD1B722B_1_105_c.jpeg',
+        '../deniz_photos/689A13C0-60C9-43C2-8434-F0BD2278F55B_1_105_c.jpeg',
+        '../deniz_photos/6CEB7411-2281-47F5-91C7-B02AAFD1E6C8_1_105_c.jpeg',
+        '../deniz_photos/6E0AEB10-A1DE-41EA-B563-027955CB9DC3_1_105_c.jpeg',
+        '../deniz_photos/70ED6808-CF1B-49CE-B7D2-D0C215F0B206_1_105_c.jpeg',
+        '../deniz_photos/7ECB8907-EA28-4530-8EA2-4196AC764A2F_1_105_c.jpeg',
+        '../deniz_photos/8A1E6B14-8C96-477E-BE0F-B09F36629B49_1_105_c.jpeg',
+        '../deniz_photos/8C34C355-8738-4169-8383-5A6A61B1197D_1_105_c.jpeg',
+        '../deniz_photos/A234EF95-A3D2-426B-8350-28DD03893A22_1_105_c.jpeg',
+        '../deniz_photos/A242E4C4-66BF-44B7-8DDB-B6AE822453ED_1_105_c.jpeg',
+        '../deniz_photos/A374C5CB-18BF-42E0-ACF2-E2774CBEFC29_1_105_c.jpeg',
+        '../deniz_photos/B095CA4A-9F96-4F5C-AAF1-BC62CBF8B958_1_105_c.jpeg',
+        '../deniz_photos/BB6C042E-4CB5-44C3-BF85-FFFF7F7D4EAF_1_105_c.jpeg',
+        '../deniz_photos/CA08C8E0-8A3F-4B3A-819B-110F99EE7BFA_1_105_c.jpeg',
+        '../deniz_photos/CA226851-9AF4-45EE-83EC-60581C09CBA8_1_105_c.jpeg',
+        '../deniz_photos/D161D9AD-DBAF-48BF-B707-784D8D0D1D88_1_105_c.jpeg',
+        '../deniz_photos/D6B11428-3F89-4EE8-BF33-66D4A16DED30_1_105_c.jpeg',
+        '../deniz_photos/E40D207E-5297-4FF9-ABCB-6691CDE934CE_1_105_c.jpeg',
+        '../deniz_photos/E984F14C-4D67-4877-9C26-C2A8BB54B137_1_105_c.jpeg',
+        '../deniz_photos/F3E0F8EF-AAE6-450E-B21C-9F0A96DFCE7C_1_105_c.jpeg',
+        '../deniz_photos/F4819540-EDCE-4782-BF70-3A67C2768D55_1_102_a.jpeg',
+        '../deniz_photos/F61B65D5-6AB8-4A3A-ACD5-ADB92155EE18_1_105_c.jpeg',
+    ];
+
+    function scatterPhotos(containerId, photoList, count, sizeMin, sizeMax) {
+        const container = document.getElementById(containerId);
         if (!container) return;
 
-        const allThumbs = [
-            '../thumbs/Kayseri/3680B452-DB9F-49D5-82FC-5F306ABAB5B6_1_105_c.jpeg',
-            '../thumbs/Malaga/451ADC0C-F51B-43B5-AFCF-23B5D308A503_1_105_c.jpeg',
-            '../thumbs/Malaga/5BB4DF3E-9C66-4F90-9026-21AD93CFB002_1_105_c.jpeg',
-            '../thumbs/Positano/4EDACF22-11BF-4399-AD2C-9ACECB68A7F0.JPG',
-            '../thumbs/Positano/FB176F85-F1B5-4D01-ABD0-422FA8DBB204_1_105_c.jpeg',
-            '../thumbs/Atina/6C636F48-322C-42AF-B601-5700C993C5C5_1_105_c.jpeg',
-            '../thumbs/Atina/7AF728E7-0A8E-47F0-984D-480E46FBF485_1_105_c.jpeg',
-            '../thumbs/Marsilya/9C400CD9-E6EE-4F55-A2C1-9BCE1F46D0FF_1_105_c.jpeg',
-            '../thumbs/Napoli/39589054-8615-4D20-B75E-FD316AAE2080.JPG',
-            '../thumbs/Izmir/EC8ACB1A-BBDE-46BE-8E57-B23B09A0C000_1_105_c.jpeg',
-            '../thumbs/Antalya/98AAFEC6-2BBA-4DE6-80F3-658178101024_1_105_c.jpeg',
-            '../thumbs/Tiflis/5B676161-457C-4625-A89F-A67D08A65175.JPG',
-            '../thumbs/Tiflis/2BF6EDA1-29AB-4121-AE2F-304287712813.JPG',
-            '../thumbs/Antalya/002DC462-D371-4FC2-BA6D-E2B66F573C3F_1_105_c.jpeg',
-        ];
+        const shuffled = [...photoList].sort(() => Math.random() - 0.5);
+        const selected = shuffled.slice(0, Math.min(count, shuffled.length));
 
-        // Shuffle and pick 8-10 photos
-        const shuffled = allThumbs.sort(() => Math.random() - 0.5);
-        const count = 8 + Math.floor(Math.random() * 3);
-        const selected = shuffled.slice(0, count);
+        // Generate random positions around edges
+        const allPositions = [];
+        // Top edge
+        for (let i = 0; i < 6; i++) allPositions.push({ top: (2 + Math.random() * 12) + '%', left: (2 + Math.random() * 90) + '%' });
+        // Bottom edge
+        for (let i = 0; i < 6; i++) allPositions.push({ bottom: (2 + Math.random() * 12) + '%', left: (2 + Math.random() * 90) + '%' });
+        // Left edge
+        for (let i = 0; i < 4; i++) allPositions.push({ top: (15 + Math.random() * 65) + '%', left: (1 + Math.random() * 8) + '%' });
+        // Right edge
+        for (let i = 0; i < 4; i++) allPositions.push({ top: (15 + Math.random() * 65) + '%', right: (1 + Math.random() * 8) + '%' });
 
-        // Positions: scattered around edges, avoiding center (envelope area)
-        // Define zones: corners and edges, leaving center ~30-70% area clear
-        const positions = [
-            // Top-left area
-            { top: '3%',  left: '2%' },
-            { top: '8%',  left: '18%' },
-            { top: '15%', left: '5%' },
-            // Top-right area
-            { top: '4%',  right: '3%' },
-            { top: '12%', right: '15%' },
-            // Bottom-left area
-            { bottom: '12%', left: '3%' },
-            { bottom: '5%',  left: '15%' },
-            // Bottom-right area
-            { bottom: '8%',  right: '5%' },
-            { bottom: '15%', right: '18%' },
-            // Mid-edges (far from center)
-            { top: '40%', left: '2%' },
-            { top: '45%', right: '2%' },
-            { bottom: '3%', left: '40%' },
-        ];
-
-        const shuffledPos = positions.sort(() => Math.random() - 0.5);
+        const shuffledPos = allPositions.sort(() => Math.random() - 0.5);
 
         selected.forEach((src, i) => {
             const wrapper = document.createElement('div');
@@ -139,29 +157,35 @@
             img.src = src;
             img.alt = '';
             img.loading = 'lazy';
-
             wrapper.appendChild(img);
 
-            // Set position
             const pos = shuffledPos[i % shuffledPos.length];
             if (pos.top) wrapper.style.top = pos.top;
             if (pos.bottom) wrapper.style.bottom = pos.bottom;
             if (pos.left) wrapper.style.left = pos.left;
             if (pos.right) wrapper.style.right = pos.right;
 
-            // Random rotation
             const rotation = -15 + Math.random() * 30;
             wrapper.style.setProperty('--rotation', rotation + 'deg');
 
-            // Random size variation
-            const size = 55 + Math.floor(Math.random() * 30);
+            const size = sizeMin + Math.floor(Math.random() * (sizeMax - sizeMin));
             wrapper.style.setProperty('--size', size + 'px');
 
-            // Stagger the fade-in
-            wrapper.style.animationDelay = (0.3 + i * 0.15) + 's';
+            wrapper.style.animationDelay = (0.2 + i * 0.1) + 's';
 
             container.appendChild(wrapper);
         });
+    }
+
+    function createScatteredPhotos() {
+        // Intro: seyahat fotoğrafları, seyrek
+        scatterPhotos('scattered-photos', TRAVEL_THUMBS, 8, 50, 80);
+        // Qualities (Sende Sevdiklerim): deniz fotoğrafları, yoğun
+        scatterPhotos('scattered-photos-qualities', DENIZ_PHOTOS, 20, 45, 75);
+        // Finale: seyahat fotoğrafları, orta yoğunluk
+        scatterPhotos('scattered-photos-finale', TRAVEL_THUMBS, 10, 45, 70);
+        // Counter: seyahat fotoğrafları, seyrek
+        scatterPhotos('scattered-photos-counter', TRAVEL_THUMBS, 6, 40, 65);
     }
 
     // ==================== ENVELOPE ====================

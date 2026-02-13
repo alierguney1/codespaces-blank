@@ -283,6 +283,18 @@ body {
     }
 }
 
+/* Dense variant for qualities page */
+.scattered-photos-dense .mini-photo {
+    opacity: 0;
+    animation: miniPhotoIn 0.6s ease forwards;
+}
+
+.scattered-photos-dense .mini-photo img {
+    border-radius: 6px;
+    border: 2.5px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15), 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
 #intro-canvas {
     position: absolute;
     top: 0;

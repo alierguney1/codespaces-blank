@@ -2,10 +2,13 @@
 photos/
 
 # Kök dizindeki loose fotoğraflar
-*.jpeg
-*.JPG
-*.jpg
-*.png
+/*.jpeg
+/*.JPG
+/*.jpg
+/*.png
+
+# HEIC dosyaları (tarayıcıda çalışmaz)
+*.heic
 
 # Kullanılmayan thumb'lar
 thumbs/Marsilya/E81B5AA8-530C-45E4-AE8A-F9FDC12FEB07_1_105_c.jpeg
