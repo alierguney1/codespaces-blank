@@ -1,0 +1,18 @@
+# Orijinal fotoğraflar (thumbs klasörü kök dizine taşındı)
+photos/
+
+# Kök dizindeki loose fotoğraflar
+*.jpeg
+*.JPG
+*.jpg
+*.png
+
+# Kullanılmayan thumb'lar
+thumbs/Marsilya/E81B5AA8-530C-45E4-AE8A-F9FDC12FEB07_1_105_c.jpeg
+thumbs/Napoli/E4A456F0-7B97-4F96-8AC1-6CB7749B9D87_4_5005_c.jpeg
+thumbs/Tiflis/0A16EDBF-F921-4E97-BA41-55CC352286C2_4_5005_c.jpeg
+thumbs/Tiflis/0EB65465-4518-425C-9A80-CBF8D071C883_4_5005_c.jpeg
+thumbs/Tiflis/B78745D4-298C-4FE4-ABA2-0F53AC5DE1A9_1_201_a.jpeg
+thumbs/Tiflis/C34BBE10-59B0-49B7-8DAC-686919C438F2.JPG
+thumbs/Tiflis/ED28694F-F0DD-4871-BB26-2A094525AAE2_1_201_a.jpeg
+thumbs/Tiflis/EFAD6907-B0F1-41F1-90F8-122111F11C04.JPG

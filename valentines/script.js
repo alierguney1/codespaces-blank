@@ -41,6 +41,7 @@
     // ==================== INIT ====================
     document.addEventListener('DOMContentLoaded', () => {
         createFloatingHearts();
+        createScatteredPhotos();
         setupEnvelope();
         setupPuzzle();
         setupNavigation();
@@ -77,6 +78,90 @@
 
         // Continuous
         setInterval(spawnHeart, 2500);
+    }
+
+    // ==================== SCATTERED MINI PHOTOS ====================
+    function createScatteredPhotos() {
+        const container = document.getElementById('scattered-photos');
+        if (!container) return;
+
+        const allThumbs = [
+            '../thumbs/Kayseri/3680B452-DB9F-49D5-82FC-5F306ABAB5B6_1_105_c.jpeg',
+            '../thumbs/Malaga/451ADC0C-F51B-43B5-AFCF-23B5D308A503_1_105_c.jpeg',
+            '../thumbs/Malaga/5BB4DF3E-9C66-4F90-9026-21AD93CFB002_1_105_c.jpeg',
+            '../thumbs/Positano/4EDACF22-11BF-4399-AD2C-9ACECB68A7F0.JPG',
+            '../thumbs/Positano/FB176F85-F1B5-4D01-ABD0-422FA8DBB204_1_105_c.jpeg',
+            '../thumbs/Atina/6C636F48-322C-42AF-B601-5700C993C5C5_1_105_c.jpeg',
+            '../thumbs/Atina/7AF728E7-0A8E-47F0-984D-480E46FBF485_1_105_c.jpeg',
+            '../thumbs/Marsilya/9C400CD9-E6EE-4F55-A2C1-9BCE1F46D0FF_1_105_c.jpeg',
+            '../thumbs/Napoli/39589054-8615-4D20-B75E-FD316AAE2080.JPG',
+            '../thumbs/Izmir/EC8ACB1A-BBDE-46BE-8E57-B23B09A0C000_1_105_c.jpeg',
+            '../thumbs/Antalya/98AAFEC6-2BBA-4DE6-80F3-658178101024_1_105_c.jpeg',
+            '../thumbs/Tiflis/5B676161-457C-4625-A89F-A67D08A65175.JPG',
+            '../thumbs/Tiflis/2BF6EDA1-29AB-4121-AE2F-304287712813.JPG',
+            '../thumbs/Antalya/002DC462-D371-4FC2-BA6D-E2B66F573C3F_1_105_c.jpeg',
+        ];
+
+        // Shuffle and pick 8-10 photos
+        const shuffled = allThumbs.sort(() => Math.random() - 0.5);
+        const count = 8 + Math.floor(Math.random() * 3);
+        const selected = shuffled.slice(0, count);
+
+        // Positions: scattered around edges, avoiding center (envelope area)
+        // Define zones: corners and edges, leaving center ~30-70% area clear
+        const positions = [
+            // Top-left area
+            { top: '3%',  left: '2%' },
+            { top: '8%',  left: '18%' },
+            { top: '15%', left: '5%' },
+            // Top-right area
+            { top: '4%',  right: '3%' },
+            { top: '12%', right: '15%' },
+            // Bottom-left area
+            { bottom: '12%', left: '3%' },
+            { bottom: '5%',  left: '15%' },
+            // Bottom-right area
+            { bottom: '8%',  right: '5%' },
+            { bottom: '15%', right: '18%' },
+            // Mid-edges (far from center)
+            { top: '40%', left: '2%' },
+            { top: '45%', right: '2%' },
+            { bottom: '3%', left: '40%' },
+        ];
+
+        const shuffledPos = positions.sort(() => Math.random() - 0.5);
+
+        selected.forEach((src, i) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mini-photo';
+
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = '';
+            img.loading = 'lazy';
+
+            wrapper.appendChild(img);
+
+            // Set position
+            const pos = shuffledPos[i % shuffledPos.length];
+            if (pos.top) wrapper.style.top = pos.top;
+            if (pos.bottom) wrapper.style.bottom = pos.bottom;
+            if (pos.left) wrapper.style.left = pos.left;
+            if (pos.right) wrapper.style.right = pos.right;
+
+            // Random rotation
+            const rotation = -15 + Math.random() * 30;
+            wrapper.style.setProperty('--rotation', rotation + 'deg');
+
+            // Random size variation
+            const size = 55 + Math.floor(Math.random() * 30);
+            wrapper.style.setProperty('--size', size + 'px');
+
+            // Stagger the fade-in
+            wrapper.style.animationDelay = (0.3 + i * 0.15) + 's';
+
+            container.appendChild(wrapper);
+        });
     }
 
     // ==================== ENVELOPE ====================
@@ -439,7 +524,7 @@
         document.querySelectorAll('.bp-photos img').forEach(img => {
             img.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const fullSrc = img.src.replace('/thumbs/', '/');
+                const fullSrc = img.src.replace('/thumbs/', '/photos/');
                 lightbox.querySelector('img').src = fullSrc;
                 lightbox.classList.add('active');
             });
@@ -655,6 +740,7 @@
     let touchStartY = 0;
     let touchStartX = 0;
     let touchStartScrollTop = 0;
+    let startedAtBoundary = false; // Was the user already at the boundary when touch started?
     let contentDidScroll = false;
     let sectionChangeCooldown = false;
 
@@ -662,10 +748,29 @@
         touchStartY = e.touches[0].clientY;
         touchStartX = e.touches[0].clientX;
         contentDidScroll = false;
+        startedAtBoundary = false;
 
         // Remember scroll position of the active section at touch start
         const activeSection = document.querySelector('.section.active');
-        touchStartScrollTop = activeSection ? activeSection.scrollTop : 0;
+        if (activeSection) {
+            touchStartScrollTop = activeSection.scrollTop;
+            const scrollHeight = activeSection.scrollHeight;
+            const clientHeight = activeSection.clientHeight;
+            const isScrollable = scrollHeight > clientHeight + 10;
+
+            if (!isScrollable) {
+                // Not scrollable — always at boundary
+                startedAtBoundary = true;
+            } else {
+                // Check if already at top or bottom when touch starts
+                const atTop = activeSection.scrollTop <= 3;
+                const atBottom = activeSection.scrollTop + clientHeight >= scrollHeight - 3;
+                startedAtBoundary = atTop || atBottom;
+            }
+        } else {
+            touchStartScrollTop = 0;
+            startedAtBoundary = true;
+        }
     }, { passive: true });
 
     document.addEventListener('touchmove', (e) => {
@@ -673,7 +778,7 @@
         const activeSection = document.querySelector('.section.active');
         if (activeSection) {
             const scrollDiff = Math.abs(activeSection.scrollTop - touchStartScrollTop);
-            if (scrollDiff > 2) {
+            if (scrollDiff > 5) {
                 contentDidScroll = true;
             }
         }
@@ -685,7 +790,7 @@
 
         const diffY = touchStartY - e.changedTouches[0].clientY;
         const diffX = touchStartX - e.changedTouches[0].clientX;
-        const threshold = 80;
+        const threshold = 120; // Higher threshold to avoid accidental triggers
 
         // If mostly horizontal swipe, ignore
         if (Math.abs(diffX) > Math.abs(diffY)) return;
@@ -704,15 +809,19 @@
                 // If content scrolled during this touch, it was a content scroll — NOT a section swipe
                 if (contentDidScroll) return;
 
-                // Extra safety: check if at scroll boundary
+                // The user must have STARTED at the boundary to trigger a section change.
+                // This prevents changing sections when a scroll gesture reaches the boundary mid-swipe.
+                if (!startedAtBoundary) return;
+
+                // Double-check: make sure we're at the correct boundary for the swipe direction
                 if (diffY > 0) {
                     // Swiping up (next): only if truly at bottom
-                    const atBottom = scrollTop + clientHeight >= scrollHeight - 20;
+                    const atBottom = scrollTop + clientHeight >= scrollHeight - 5;
                     if (!atBottom) return;
                 }
                 if (diffY < 0) {
                     // Swiping down (prev): only if truly at top
-                    const atTop = scrollTop <= 5;
+                    const atTop = scrollTop <= 3;
                     if (!atTop) return;
                 }
             }
@@ -720,7 +829,7 @@
 
         // Apply cooldown to prevent double-triggers
         sectionChangeCooldown = true;
-        setTimeout(() => { sectionChangeCooldown = false; }, 800);
+        setTimeout(() => { sectionChangeCooldown = false; }, 1000);
 
         if (diffY > 0) {
             // Swipe up - next section
@@ -834,14 +943,14 @@
         
         // City-photo pairs for matching (8 pairs = 16 cards)
         const cityPhotoPairs = [
-            { city: 'Kayseri', emoji: '⛷️', photo: '../photos/thumbs/Kayseri/3680B452-DB9F-49D5-82FC-5F306ABAB5B6_1_105_c.jpeg' },
-            { city: 'Malaga', emoji: '🇪🇸', photo: '../photos/thumbs/Malaga/451ADC0C-F51B-43B5-AFCF-23B5D308A503_1_105_c.jpeg' },
-            { city: 'Positano', emoji: '🇮🇹', photo: '../photos/thumbs/Positano/4EDACF22-11BF-4399-AD2C-9ACECB68A7F0.JPG' },
-            { city: 'Atina', emoji: '🇬🇷', photo: '../photos/thumbs/Atina/6C636F48-322C-42AF-B601-5700C993C5C5_1_105_c.jpeg' },
-            { city: 'Marsilya', emoji: '🇫🇷', photo: '../photos/thumbs/Marsilya/9C400CD9-E6EE-4F55-A2C1-9BCE1F46D0FF_1_105_c.jpeg' },
-            { city: 'İzmir', emoji: '🏖️', photo: '../photos/thumbs/Izmir/EC8ACB1A-BBDE-46BE-8E57-B23B09A0C000_1_105_c.jpeg' },
-            { city: 'Antalya', emoji: '🌊', photo: '../photos/thumbs/Antalya/98AAFEC6-2BBA-4DE6-80F3-658178101024_1_105_c.jpeg' },
-            { city: 'Tiflis', emoji: '🇬🇪', photo: '../photos/thumbs/Tiflis/5B676161-457C-4625-A89F-A67D08A65175.JPG' }
+            { city: 'Kayseri', emoji: '⛷️', photo: '../thumbs/Kayseri/3680B452-DB9F-49D5-82FC-5F306ABAB5B6_1_105_c.jpeg' },
+            { city: 'Malaga', emoji: '🇪🇸', photo: '../thumbs/Malaga/451ADC0C-F51B-43B5-AFCF-23B5D308A503_1_105_c.jpeg' },
+            { city: 'Positano', emoji: '🇮🇹', photo: '../thumbs/Positano/4EDACF22-11BF-4399-AD2C-9ACECB68A7F0.JPG' },
+            { city: 'Atina', emoji: '🇬🇷', photo: '../thumbs/Atina/6C636F48-322C-42AF-B601-5700C993C5C5_1_105_c.jpeg' },
+            { city: 'Marsilya', emoji: '🇫🇷', photo: '../thumbs/Marsilya/9C400CD9-E6EE-4F55-A2C1-9BCE1F46D0FF_1_105_c.jpeg' },
+            { city: 'İzmir', emoji: '🏖️', photo: '../thumbs/Izmir/EC8ACB1A-BBDE-46BE-8E57-B23B09A0C000_1_105_c.jpeg' },
+            { city: 'Antalya', emoji: '🌊', photo: '../thumbs/Antalya/98AAFEC6-2BBA-4DE6-80F3-658178101024_1_105_c.jpeg' },
+            { city: 'Tiflis', emoji: '🇬🇪', photo: '../thumbs/Tiflis/5B676161-457C-4625-A89F-A67D08A65175.JPG' }
         ];
         
         resetBtn.addEventListener('click', initMemoryGame);
