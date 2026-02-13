@@ -654,18 +654,51 @@
     // ==================== TOUCH SWIPE SUPPORT ====================
     let touchStartY = 0;
     let touchStartX = 0;
+    let touchStartTime = 0;
+    let touchStartScrollTop = 0;
 
     document.addEventListener('touchstart', (e) => {
         touchStartY = e.touches[0].clientY;
         touchStartX = e.touches[0].clientX;
+        touchStartTime = Date.now();
+
+        // Remember scroll position of the active section at touch start
+        const activeSection = document.querySelector('.section.active');
+        touchStartScrollTop = activeSection ? activeSection.scrollTop : 0;
     }, { passive: true });
 
     document.addEventListener('touchend', (e) => {
         const diffY = touchStartY - e.changedTouches[0].clientY;
         const diffX = touchStartX - e.changedTouches[0].clientX;
-        const threshold = 60;
+        const elapsed = Date.now() - touchStartTime;
+        const threshold = 80;
+
+        // Ignore very slow drags (user is casually scrolling content)
+        if (elapsed > 600) return;
 
         if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > threshold) {
+            const activeSection = document.querySelector('.section.active');
+
+            if (activeSection) {
+                const scrollTop = activeSection.scrollTop;
+                const scrollHeight = activeSection.scrollHeight;
+                const clientHeight = activeSection.clientHeight;
+                const isScrollable = scrollHeight > clientHeight + 10;
+
+                if (isScrollable) {
+                    // Swiping up (next section): only allow if scrolled to bottom
+                    if (diffY > 0) {
+                        const atBottom = scrollTop + clientHeight >= scrollHeight - 15;
+                        if (!atBottom) return; // still has content to scroll
+                    }
+                    // Swiping down (prev section): only allow if scrolled to top
+                    if (diffY < 0) {
+                        const atTop = scrollTop <= 5;
+                        if (!atTop) return; // still has content above
+                    }
+                }
+            }
+
             if (diffY > 0) {
                 // Swipe up - next section
                 if (currentSection === 0) return;
