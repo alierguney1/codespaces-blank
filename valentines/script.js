@@ -179,13 +179,13 @@
 
     function createScatteredPhotos() {
         // Intro: seyahat fotoğrafları, seyrek
-        scatterPhotos('scattered-photos', TRAVEL_THUMBS, 8, 75, 110);
+        scatterPhotos('scattered-photos', TRAVEL_THUMBS, 8, 60, 140);
         // Qualities (Sende Sevdiklerim): deniz fotoğrafları, yoğun
-        scatterPhotos('scattered-photos-qualities', DENIZ_PHOTOS, 20, 70, 100);
+        scatterPhotos('scattered-photos-qualities', DENIZ_PHOTOS, 20, 55, 130);
         // Finale: seyahat fotoğrafları, orta yoğunluk
-        scatterPhotos('scattered-photos-finale', TRAVEL_THUMBS, 10, 65, 95);
+        scatterPhotos('scattered-photos-finale', TRAVEL_THUMBS, 10, 55, 125);
         // Counter: seyahat fotoğrafları, seyrek
-        scatterPhotos('scattered-photos-counter', TRAVEL_THUMBS, 6, 65, 90);
+        scatterPhotos('scattered-photos-counter', TRAVEL_THUMBS, 6, 55, 120);
     }
 
     // ==================== ENVELOPE ====================
