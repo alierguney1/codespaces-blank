@@ -18,7 +18,6 @@
         'gallery-section',
         'counter-section',
         'memory-game-section',
-        'future-section',
         'finale-section'
     ];
 
@@ -49,7 +48,7 @@
         setupIntersectionAnimations();
         startCounter();
         setupMemoryGame();
-        setupBoardingPasses();
+        setupTravelMap();
         setupGalleryLightbox();
     });
 
@@ -465,16 +464,13 @@
                 animateDictionary();
                 break;
             case 'travel-section':
-                animateBoardingPasses();
+                // Map is already initialized
                 break;
             case 'counter-section':
                 initStarryBackground();
                 break;
             case 'memory-game-section':
                 // Game is already set up
-                break;
-            case 'future-section':
-                animateDreams();
                 break;
             case 'finale-section':
                 animateFinale();
@@ -545,58 +541,140 @@
     }
 
     // ==================== BOARDING PASSES ====================
-    function setupBoardingPasses() {
-        // Click to flip
-        document.querySelectorAll('.boarding-pass').forEach(bp => {
-            bp.addEventListener('click', (e) => {
-                // Don't flip if clicking a photo
-                if (e.target.tagName === 'IMG') return;
-                bp.classList.toggle('flipped');
+    function setupTravelMap() {
+        // City data
+        const citiesData = {
+            'kayseri': {
+                name: 'Kayseri 🏔️',
+                date: '10 Ocak 2025',
+                photos: [
+                    '../thumbs/Kayseri/3680B452-DB9F-49D5-82FC-5F306ABAB5B6_1_105_c.jpeg'
+                ]
+            },
+            'malaga': {
+                name: 'Malaga 🇪🇸',
+                date: '15 Mart 2025',
+                photos: [
+                    '../thumbs/Malaga/451ADC0C-F51B-43B5-AFCF-23B5D308A503_1_105_c.jpeg',
+                    '../thumbs/Malaga/5BB4DF3E-9C66-4F90-9026-21AD93CFB002_1_105_c.jpeg',
+                    '../thumbs/Malaga/FC7DADF9-FD29-4AE1-A3F4-7A67EBFE5403_1_105_c.jpeg'
+                ]
+            },
+            'napoli': {
+                name: 'Napoli · Positano 🇮🇹',
+                date: '2 Mayıs 2025',
+                photos: [
+                    '../thumbs/Napoli/39589054-8615-4D20-B75E-FD316AAE2080.JPG',
+                    '../thumbs/Napoli/A4CE37D6-718B-4FD6-9589-1FD21C96336D.JPG',
+                    '../thumbs/Napoli/C50758AA-6AD7-422E-AC24-090AF7748CF3_1_105_c.jpeg',
+                    '../thumbs/Positano/4EDACF22-11BF-4399-AD2C-9ACECB68A7F0.JPG',
+                    '../thumbs/Positano/FB176F85-F1B5-4D01-ABD0-422FA8DBB204_1_105_c.jpeg',
+                    '../thumbs/Positano/F3E0F8EF-AAE6-450E-B21C-9F0A96DFCE7C_1_105_c.jpeg'
+                ]
+            },
+            'atina': {
+                name: 'Atina 🇬🇷',
+                date: '18 Mayıs 2025',
+                photos: [
+                    '../thumbs/Atina/6C636F48-322C-42AF-B601-5700C993C5C5_1_105_c.jpeg',
+                    '../thumbs/Atina/7AF728E7-0A8E-47F0-984D-480E46FBF485_1_105_c.jpeg'
+                ]
+            },
+            'marsilya': {
+                name: 'Marsilya 🇫🇷',
+                date: '2 Haziran 2025',
+                photos: [
+                    '../thumbs/Marsilya/9C400CD9-E6EE-4F55-A2C1-9BCE1F46D0FF_1_105_c.jpeg',
+                    '../thumbs/Marsilya/D1FFC367-BDB5-446E-9126-4183325720E0_1_105_c.jpeg'
+                ]
+            },
+            'izmir': {
+                name: 'İzmir 🏖️',
+                date: '17 Ağustos 2025',
+                photos: [
+                    '../thumbs/Izmir/EC8ACB1A-BBDE-46BE-8E57-B23B09A0C000_1_105_c.jpeg'
+                ]
+            },
+            'antalya': {
+                name: 'Antalya 🌊',
+                date: '24 Ağustos 2025',
+                photos: [
+                    '../thumbs/Antalya/98AAFEC6-2BBA-4DE6-80F3-658178101024_1_105_c.jpeg',
+                    '../thumbs/Antalya/002DC462-D371-4FC2-BA6D-E2B66F573C3F_1_105_c.jpeg'
+                ]
+            },
+            'tiflis': {
+                name: 'Tiflis 🇬🇪',
+                date: '28 Ekim 2025',
+                photos: [
+                    '../thumbs/Tiflis/5B676161-457C-4625-A89F-A67D08A65175.JPG',
+                    '../thumbs/Tiflis/A5D95273-FA9B-47B7-8AE8-F0D460708177.JPG',
+                    '../thumbs/Tiflis/2BF6EDA1-29AB-4121-AE2F-304287712813.JPG',
+                    '../thumbs/Tiflis/DF31E8F3-DDA3-4995-8A94-D74E179F4FD1_1_105_c.jpeg',
+                    '../thumbs/Tiflis/E4F648F4-D0C2-4602-9DE8-0798DDE6800E.JPG',
+                    '../thumbs/Tiflis/61F21DE2-C99D-4E36-AE41-83918CACA85B.JPG'
+                ]
+            }
+        };
+
+        // Add click handlers to city cards
+        document.querySelectorAll('.city-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const cityKey = card.dataset.city;
+                const cityData = citiesData[cityKey];
+                if (cityData) {
+                    showCityInfo(cityData);
+                }
             });
         });
 
-        // Lightbox for photos
-        const lightbox = document.createElement('div');
-        lightbox.className = 'bp-lightbox';
-        lightbox.innerHTML = '<img src="" alt="">';
-        document.body.appendChild(lightbox);
-
-        lightbox.addEventListener('click', () => {
-            lightbox.classList.remove('active');
-        });
-
-        document.querySelectorAll('.bp-photos img').forEach(img => {
-            img.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const fullSrc = img.src.replace('/thumbs/', '/photos/');
-                lightbox.querySelector('img').src = fullSrc;
-                lightbox.classList.add('active');
-            });
-        });
+        // Setup city info panel
+        setupCityInfoPanel();
     }
 
-    function animateBoardingPasses() {
-        const passes = document.querySelectorAll('.boarding-pass');
-        passes.forEach((bp, i) => {
-            setTimeout(() => {
-                bp.classList.add('visible');
-            }, 200 + i * 150);
+    function showCityInfo(city) {
+        const panel = document.getElementById('city-info-panel');
+        const title = document.getElementById('city-info-title');
+        const date = document.getElementById('city-info-date');
+        const photos = document.getElementById('city-info-photos');
+
+        title.textContent = city.name;
+        date.textContent = city.date;
+
+        // Clear and add photos
+        photos.innerHTML = '';
+        city.photos.forEach(photoSrc => {
+            const img = document.createElement('img');
+            img.src = photoSrc;
+            img.alt = city.name;
+            img.loading = 'lazy';
+            img.addEventListener('click', () => {
+                // Open photo in new tab
+                window.open(photoSrc.replace('/thumbs/', '/deniz_photos/'), '_blank');
+            });
+            photos.appendChild(img);
         });
 
-        // Show footer
-        const footer = document.querySelector('.travel-footer');
-        if (footer) {
-            setTimeout(() => footer.classList.add('visible'), 400 + passes.length * 150);
+        panel.classList.remove('hidden');
+    }
+
+    function setupCityInfoPanel() {
+        const closeBtn = document.getElementById('city-info-close');
+        const panel = document.getElementById('city-info-panel');
+
+        if (closeBtn && panel) {
+            closeBtn.addEventListener('click', () => {
+                panel.classList.add('hidden');
+            });
+
+            // Close on background click
+            document.addEventListener('click', (e) => {
+                if (panel.classList.contains('hidden')) return;
+                if (!panel.contains(e.target) && !e.target.closest('.city-card')) {
+                    panel.classList.add('hidden');
+                }
+            });
         }
-    }
-
-    function animateDreams() {
-        const cards = document.querySelectorAll('.dream-card');
-        cards.forEach((card, i) => {
-            setTimeout(() => {
-                card.classList.add('visible');
-            }, 200 + i * 200);
-        });
     }
 
     function animateFinale() {
@@ -737,8 +815,7 @@
             'btn-to-gallery': 6,
             'btn-to-counter': 7,
             'btn-to-memory-game': 8,
-            'btn-to-future': 9,
-            'btn-to-finale': 10
+            'btn-to-finale': 9
         };
 
         Object.entries(btnMap).forEach(([id, sectionIndex]) => {
