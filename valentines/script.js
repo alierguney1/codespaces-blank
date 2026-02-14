@@ -50,6 +50,7 @@
         setupMemoryGame();
         setupTravelMap();
         setupGalleryLightbox();
+        setupQualityCardModal();
     });
 
     // ==================== FLOATING HEARTS ====================
@@ -1113,6 +1114,34 @@
                 e.stopPropagation();
                 lightbox.querySelector('img').src = img.src;
                 lightbox.classList.add('active');
+            });
+        });
+    }
+
+    // ==================== QUALITY CARD MODAL ====================
+    function setupQualityCardModal() {
+        const modal = document.getElementById('quality-modal');
+        const modalIcon = modal.querySelector('.quality-modal-icon');
+        const modalTitle = modal.querySelector('.quality-modal-title');
+        const modalText = modal.querySelector('.quality-modal-text');
+
+        // Close modal when clicking backdrop
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Open modal when clicking a quality card
+        document.querySelectorAll('.quality-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const icon = card.querySelector('.quality-icon').textContent;
+                const title = card.querySelector('h3').textContent;
+                const text = card.querySelector('p').textContent;
+                modalIcon.textContent = icon;
+                modalTitle.textContent = title;
+                modalText.textContent = text;
+                modal.classList.add('active');
             });
         });
     }

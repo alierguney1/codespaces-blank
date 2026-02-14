@@ -694,6 +694,70 @@ body {
     font-weight: 300;
 }
 
+.quality-card {
+    cursor: pointer;
+}
+
+/* ---------- QUALITY CARD MODAL ---------- */
+.quality-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    cursor: pointer;
+}
+
+.quality-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.quality-modal-content {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 40px 30px;
+    max-width: 340px;
+    width: 85%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+    cursor: default;
+    border: 1px solid rgba(248, 187, 208, 0.3);
+}
+
+.quality-modal.active .quality-modal-content {
+    transform: scale(1);
+}
+
+.quality-modal-icon {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+}
+
+.quality-modal-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.quality-modal-text {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    line-height: 1.8;
+    font-weight: 300;
+}
+
 /* ---------- GALLERY ---------- */
 
 /* ---------- OUR DICTIONARY ---------- */
